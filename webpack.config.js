@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './main.ts',
+  entry: './src/main.tsx',
   mode: 'production',
   module: {
     rules: [
