@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   entry: './src/main.tsx',
   mode: 'production',
@@ -16,5 +18,6 @@ module.exports = {
   },
   output: {
     filename: 'main.js',
+    path: path.resolve(__dirname, 'docs'),
   },
 };

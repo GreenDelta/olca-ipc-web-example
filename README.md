@@ -7,7 +7,7 @@ packaged with webpack. It just provides a small dialog for connecting to an IPC
 server and calculating a product system. You can test the example application
 here:
 
-
+<strong>https://greendelta.github.io/olca-ipc-web-example</strong>
 
 ## Building from source
 

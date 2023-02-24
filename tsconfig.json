@@ -8,7 +8,7 @@
       "dom"
     ],
     "jsx": "react",
-    "outDir": "./dist",
+    "outDir": "./docs",
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
