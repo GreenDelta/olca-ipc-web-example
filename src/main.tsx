@@ -30,6 +30,11 @@ const App = () => {
     setDataRefs(null);
   }
 
+  const fail = (error: string) => {
+    reset();
+    setState({ error });
+  };
+
   React.useEffect(() => {
     if (!state.client) {
       return;
@@ -41,17 +46,17 @@ const App = () => {
         const systems = await client.getDescriptors(o.RefType.ProductSystem);
         const methods = await client.getDescriptors(o.RefType.ImpactMethod);
         if (!systems || systems.length === 0) {
-          setState({ error: "Could not find any product systems" });
+          fail("Could not find any product systems");
           return;
         }
         if (!methods || methods.length === 0) {
-          setState({ error: "Could not find any LCIA method" });
+          fail("Could not find any LCIA method");
           return;
         }
         setDataRefs({ systems, methods });
         setProgress(null);
       } catch (e) {
-        setState({ error: `Connection failed: ${e}` });
+        fail(`Connection failed: ${e}`);
       }
     })();
   }, [state.client]);
@@ -60,8 +65,12 @@ const App = () => {
     setProgress("Calculating ...")
     const result = await state.client?.calculate(setup);
     if (!result) {
-      reset();
-      setState({ error: "calculation failed: no result retrieved" });
+      fail("calculation failed: no result retrieved");
+      return;
+    }
+    const s = await result.untilReady();
+    if (s.error) {
+      fail(s.error);
       return;
     }
     setProgress(null);

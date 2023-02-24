@@ -24,6 +24,12 @@ export const ResultPanel = ({ setup, result, onClose }: {
     return <article aria-busy="true"></article>;
   }
 
+  const items = impacts.map(i => <tr>
+    <td>{i.impactCategory?.name}</td>
+    <td>{i.amount?.toExponential(2)}</td>
+    <td>{i.impactCategory?.refUnit}</td>
+  </tr>);
+
   return <article>
     <h3>Results of: {setup.target?.name}</h3>
     <table>
@@ -35,11 +41,7 @@ export const ResultPanel = ({ setup, result, onClose }: {
         </tr>
       </thead>
       <tbody>
-        {impacts.map(i => <tr>
-          <td>{i.impactCategory?.name}</td>
-          <td>{i.amount?.toExponential(2)}</td>
-          <td>{i.impactCategory?.refUnit}</td>
-        </tr>)}
+        {items}
       </tbody>
     </table>
     <div className="grid">
