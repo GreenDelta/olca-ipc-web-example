@@ -1,14 +1,16 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as o from "olca-ipc";
+import * as protocol from "olca-ipc/types/src/protocol";
 import { ConnectionPanel } from "./connection-panel";
 import { SetupPanel } from "./setup-panel";
-
-type Client = o.IpcClient | o.RestClient;
+import { ResultPanel } from "./result-panel";
 
 interface State {
-  client?: Client;
+  client?: protocol.Client;
   error?: string;
+  setup?: o.CalculationSetup;
+  result?: protocol.Result;
 }
 
 const App = () => {
@@ -20,6 +22,9 @@ const App = () => {
   } | null>(null);
 
   const reset = () => {
+    if (state.result) {
+      state.result.dispose();
+    }
     setState({});
     setProgress(null);
     setDataRefs(null);
@@ -49,9 +54,19 @@ const App = () => {
         setState({ error: `Connection failed: ${e}` });
       }
     })();
-
-    console.log("client set!");
   }, [state.client]);
+
+  const calculate = async (setup: o.CalculationSetup) => {
+    setProgress("Calculating ...")
+    const result = await state.client?.calculate(setup);
+    if (!result) {
+      reset();
+      setState({ error: "calculation failed: no result retrieved" });
+      return;
+    }
+    setProgress(null);
+    setState({ ...state, setup, result });
+  };
 
   if (state.error) {
     return <ErrorPanel message={state.error} onReset={reset} />;
@@ -63,9 +78,17 @@ const App = () => {
     return <ConnectionPanel
       onConnected={(client) => setState({ ...state, client })} />;
   }
-  if (dataRefs) {
-    return <SetupPanel {...dataRefs} onCalculate={() => ""} />
+  if (!state.result && dataRefs) {
+    return <SetupPanel {...dataRefs}
+      onCalculate={(setup) => { calculate(setup); }} />
   }
+  if (state.setup && state.result) {
+    return <ResultPanel
+      setup={state.setup}
+      result={state.result}
+      onClose={reset} />
+  }
+
   return <ErrorPanel message="Unhandled state" onReset={reset} />;
 };
 
@@ -95,17 +118,7 @@ const ProgressPanel = ({ message }: { message: string }) => {
   </article>;
 };
 
-async function main() {
-
+function main() {
   ReactDOM.render(<App />, document.getElementById("app"));
-
-  /*
-  const client = o.IpcClient.on(8080);
-  const flowRefs = await client.getDescriptors(o.RefType.Flow);
-  flowRefs.forEach(d => {
-    console.log(d.id, d.flowType);
-  })
-  */
 };
-
 main();

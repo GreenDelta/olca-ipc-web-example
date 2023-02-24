@@ -17,18 +17,18 @@ export const SetupPanel = (props: {
     <form>
       <label htmlFor="system">
         Product system
-        <select id="system" value={system?.name || ""}
+        <select id="system" value={system?.id || ""}
           onChange={(e) => setSystem(select(e.target.value, systems))}>
-          <option></option>
-          {systems.map(s => <option>{s.name}</option>)}
+          <option value=""></option>
+          {systems.map(s => <option value={s.id || ""}>{s.name}</option>)}
         </select>
       </label>
       <label htmlFor="method">
         Impact assessment method
-        <select id="method" value={method?.name || ""}
+        <select id="method" value={method?.id || ""}
           onChange={(e) => setMethod(select(e.target.value, methods))}>
-          <option></option>
-          {methods.map(m => <option>{m.name}</option>)}
+          <option value=""></option>
+          {methods.map(m => <option value={m.id || ""}>{m.name}</option>)}
         </select>
       </label>
       <div className="grid">
@@ -71,17 +71,15 @@ function sort(refs: o.Ref[]): o.Ref[] {
   return nodups;
 }
 
-function select(name: string, refs: o.Ref[]): o.Ref | null {
-  if (!name) {
+function select(id: string, refs: o.Ref[]): o.Ref | null {
+  if (!id) {
     return null;
   }
-  console.log(name + ":: " + escape(name));
   for (const ref of refs) {
-    if (!ref.name) {
+    if (!ref.id) {
       continue;
     }
-    console.log(">> " + ref.name + ":: " + escape(ref.name));
-    if (name.trim() == ref.name.trim()) {
+    if (id == ref.id) {
       return ref;
     }
   }
