@@ -54,17 +54,34 @@ function sort(refs: o.Ref[]): o.Ref[] {
   if (!refs || refs.length === 0) {
     return [];
   }
-  const sorted = [...refs];
-  sorted.sort((r1, r2) => r1.name?.localeCompare(r2.name || "") || 0);
-  return sorted;
+  const handled: Record<string, boolean> = {};
+  const nodups: o.Ref[] = [];
+  for (const ref of refs) {
+    if (!ref.name) {
+      continue;
+    }
+    const key = ref.name.trim();
+    if (handled[key]) {
+      continue;
+    }
+    handled[key] = true;
+    nodups.push(ref);
+  }
+  nodups.sort((r1, r2) => r1.name?.localeCompare(r2.name || "") || 0);
+  return nodups;
 }
 
 function select(name: string, refs: o.Ref[]): o.Ref | null {
   if (!name) {
     return null;
   }
+  console.log(name + ":: " + escape(name));
   for (const ref of refs) {
-    if (name === ref.name) {
+    if (!ref.name) {
+      continue;
+    }
+    console.log(">> " + ref.name + ":: " + escape(ref.name));
+    if (name.trim() == ref.name.trim()) {
       return ref;
     }
   }
