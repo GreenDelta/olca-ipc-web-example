@@ -2,6 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as o from "olca-ipc";
 import { ConnectionPanel } from "./connection-panel";
+import { SetupPanel } from "./setup-panel";
 
 type Client = o.IpcClient | o.RestClient;
 
@@ -10,15 +11,18 @@ interface State {
   error?: string;
 }
 
-
-
 const App = () => {
   const [state, setState] = React.useState<State>({});
   const [progress, setProgress] = React.useState<string | null>(null);
+  const [dataRefs, setDataRefs] = React.useState<{
+    systems: o.Ref[];
+    methods: o.Ref[];
+  } | null>(null);
 
   const reset = () => {
     setState({});
     setProgress(null);
+    setDataRefs(null);
   }
 
   React.useEffect(() => {
@@ -36,9 +40,10 @@ const App = () => {
           return;
         }
         if (!methods || methods.length === 0) {
-          setState({ error: "Could not find any product systems" });
+          setState({ error: "Could not find any LCIA method" });
           return;
         }
+        setDataRefs({ systems, methods });
         setProgress(null);
       } catch (e) {
         setState({ error: `Connection failed: ${e}` });
@@ -57,6 +62,9 @@ const App = () => {
   if (!state.client) {
     return <ConnectionPanel
       onConnected={(client) => setState({ ...state, client })} />;
+  }
+  if (dataRefs) {
+    return <SetupPanel {...dataRefs} onCalculate={() => ""} />
   }
   return <ErrorPanel message="Unhandled state" onReset={reset} />;
 };

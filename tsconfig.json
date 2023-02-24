@@ -11,6 +11,7 @@
     "outDir": "./dist",
     "strict": true,
     "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
   },
   "exclude": [
     "dist",

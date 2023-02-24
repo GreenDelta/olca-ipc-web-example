@@ -1,6 +1,7 @@
 module.exports = {
   entry: './src/main.tsx',
   mode: 'production',
+  devtool: 'source-map',
   module: {
     rules: [
       {
